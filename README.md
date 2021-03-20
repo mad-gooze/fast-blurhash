@@ -19,7 +19,7 @@ npm install --save fast-blurhash
 decode(blurhash: string, width: number, height: number, punch?: number) => Uint8ClampedArray`
 ```
 
-`fast-blurhash` uses approximate calculation for speed reasons
+`fast-blurhash` uses approximate calculation for speed reasons. Results may slightly differ from original `blurhash.decode` but the diff is not noticeable (see [tests](./index.test.js)). 
 
 #### Example
 
