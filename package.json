@@ -37,5 +37,6 @@
         "webpack": "^5.27.1",
         "webpack-cli": "^4.5.0"
     },
+    "sideEffects": false,
     "type": "module"
 }
