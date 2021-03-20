@@ -17,7 +17,7 @@ npm install --save fast-blurhash
 decode(blurhash: string, width: number, height: number, punch?: number) => Uint8ClampedArray`
 ```
 
-> Decodes a blurhash string to pixels
+`fast-blurhash` uses approximate calculation for speed reasons
 
 #### Example
 

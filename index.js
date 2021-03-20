@@ -27,6 +27,7 @@ const signSqr = (x) => (x < 0 ? -1 : 1) * x * x;
 
 /**
  * Fast approximate cosine implementation
+ * Based on FTrig https://github.com/netcell/FTrig
  */
 const fastCos = (x) => {
     x += PI / 2;
