@@ -10,9 +10,19 @@ jobs:
     build:
         runs-on: ubuntu-latest
 
+        strategy:
+            matrix:
+                node-version: [lts*]
+
         steps:
             - uses: actions/checkout@v2
-            - uses: dcodeIO/setup-node-nvm@master
+            # Read node version from `.nvmrc` file
+            - id: nvmrc
+              uses: browniebroke/read-nvmrc-action@v1
+            - uses: actions/setup-node@v1
+              with:
+                  # use the output from the action
+                  node-version: '${{ steps.nvmrc.outputs.node_version }}'
             - run: npm ci
             - run: npm run build --if-present
             - run: npm test
