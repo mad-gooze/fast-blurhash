@@ -18,7 +18,7 @@ jobs:
             - uses: actions/checkout@v2
             - uses: dcodeIO/setup-node-nvm@master
               with:
-                  node-version: ''
+                  node-version: lts/*
             - run: npm ci
             - run: npm run build --if-present
             - run: npm test
