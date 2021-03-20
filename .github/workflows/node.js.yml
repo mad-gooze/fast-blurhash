@@ -22,3 +22,13 @@ jobs:
             - run: npm ci
             - run: npm run build --if-present
             - run: npm test
+            - run: npm demo
+            -
+              name: Deploy to GitHub Pages
+              if: success()
+              uses: crazy-max/ghaction-github-pages@v2
+              with:
+                target_branch: gh-pages
+                build_dir: public
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
