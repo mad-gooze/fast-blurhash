@@ -16,7 +16,7 @@ npm install --save fast-blurhash
 `fast-blurhash` provides a drop-in replacement for [original `blurhash.decode`](https://github.com/woltapp/blurhash/tree/master/TypeScript#decodeblurhash-string-width-number-height-number-punch-number--uint8clampedarray)
 
 ```typescript
-decode(blurhash: string, width: number, height: number, punch?: number) => Uint8ClampedArray`
+decodeBlurHash(blurhash: string, width: number, height: number, punch?: number) => Uint8ClampedArray`
 ```
 
 `fast-blurhash` uses approximate calculation for speed reasons. Results may slightly differ from original `blurhash.decode` but the diff is not noticeable (see [tests](./index.test.js)).

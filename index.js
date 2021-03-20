@@ -11,14 +11,15 @@ const decode83 = (str, start, end) => {
 
 const pow = Math.pow;
 const PI = Math.PI;
+const PI2 = PI * 2;
 
 const d = 3294.6;
 const e = 269.025;
 const sRGBToLinear = (value) =>
-    value <= 10.31475 ? value / d : pow(value / e + 0.052132, 2.4);
+    value > 10.31475 ? pow(value / e + 0.052132, 2.4) : value / d;
 
 const linearTosRGB = (v) =>
-    ~~(v <= 0.00001227 ? v * d + 1 : e * pow(v, 0.416666) - 13.025);
+    ~~(v > 0.00001227 ? e * pow(v, 0.416666) - 13.025 : v * d + 1);
 
 const signSqr = (x) => (x < 0 ? -1 : 1) * x * x;
 
@@ -28,14 +29,9 @@ const signSqr = (x) => (x < 0 ? -1 : 1) * x * x;
  */
 const fastCos = (x) => {
     x += PI / 2;
-    x =
-        x > PI * 5
-            ? x - PI * 6
-            : x > PI * 3
-            ? x - PI * 4
-            : x > PI
-            ? x - PI * 2
-            : x;
+    while (x > PI) {
+        x -= PI2;
+    }
     const cos = 1.27323954 * x - 0.405284735 * signSqr(x);
     return 0.225 * (signSqr(cos) - cos) + cos;
 };
@@ -63,7 +59,19 @@ export function decodeBlurHash(blurHash, width, height, punch) {
     colors[1] = sRGBToLinear((value >> 8) & 255);
     colors[2] = sRGBToLinear(value & 255);
 
-    let i, j, x, y, r, g, b, basis, colorIndex, pixelIndex;
+    let i = 0,
+        j = 0,
+        x = 0,
+        y = 0,
+        r = 0,
+        g = 0,
+        b = 0,
+        basis = 0,
+        basisY = 0,
+        colorIndex = 0,
+        pixelIndex = 0,
+        yh = 0,
+        xw = 0;
 
     for (i = 1; i < size; i++) {
         value = decode83(blurHash, 4 + i * 2, 6 + i * 2);
@@ -76,15 +84,17 @@ export function decodeBlurHash(blurHash, width, height, punch) {
     const pixels = new Uint8ClampedArray(bytesPerRow * height);
 
     for (y = 0; y < height; y++) {
+        yh = (PI * y) / height;
         for (x = 0; x < width; x++) {
             r = 0;
             g = 0;
             b = 0;
+            xw = (PI * x) / width;
 
             for (j = 0; j < numY; j++) {
-                const basisY = fastCos((PI * y * j) / height);
+                basisY = fastCos(yh * j);
                 for (i = 0; i < numX; i++) {
-                    basis = fastCos((PI * x * i) / width) * basisY;
+                    basis = fastCos(xw * i) * basisY;
                     colorIndex = (i + j * numX) * 3;
                     r += colors[colorIndex] * basis;
                     g += colors[colorIndex + 1] * basis;
