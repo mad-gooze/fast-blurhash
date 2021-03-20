@@ -9,7 +9,7 @@ const hashes = [
     'gHF5]+Yk^6#M9wKSW@@-5b,1J5O[V=R:@[or[k6.O[TLtJ};FxngOZE3NgNHjMFxS#OtcXnzRj',
     '|HF5]+Yk^6#M9wKSW@j=#*@-5b,1J5O[V=R:s;w[@[or[k6.O[TLtJnNnO};FxngOZE3NgNHsps,jMFxS#OtcXnzRjxZxHj]OYNeR:JCs9xunhwIbeIpNaxHNGr;v}aeo0Xmt6XS$et6#*$ft6nhxHnNV@w{nOenwfNHo0',
     '|EHV6nWB2yk8$NxujFNGt6pyoJadR*=ss:I[R%of.7kCMdnjx]S2NHs:i_S#M|%1%2ENRis9a$%1Sis.slNHW:WBxZ%2NbogaekBW;ofo0NHS4j?W?WBsloLR+oJofS2s:ozj@s:jaR*Wps.j[RkT0of%2afR*fkoJjZof',
-]
+];
 
 const sizes = [
     { width: 2, height: 2 },
@@ -18,12 +18,12 @@ const sizes = [
     { width: 64, height: 64 },
     { width: 100, height: 50 },
     { width: 1920, height: 1080 },
-]
+];
 
 /**
  * Calculates mean square error
- * @param {number[]} received 
- * @param {number[]} expected 
+ * @param {number[]} received
+ * @param {number[]} expected
  * @returns number
  */
 function mse(received, expected) {
@@ -33,7 +33,7 @@ function mse(received, expected) {
         sum += (received[i] - expected[i]) ** 2;
     }
     return sum / received.length;
-};
+}
 
 describe('fast-blurhash', () => {
     sizes.forEach(({ width, height }) => {

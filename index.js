@@ -1,4 +1,5 @@
-const digit = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~';
+const digit =
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~';
 const decode83 = (str, start, end) => {
     let value = 0;
     while (start < end) {
@@ -13,15 +14,11 @@ const PI = Math.PI;
 
 const d = 3294.6;
 const e = 269.025;
-const sRGBToLinear = (value) => value <= 10.31475
-    ? value / d
-    : pow(value / e + 0.052132, 2.4);
+const sRGBToLinear = (value) =>
+    value <= 10.31475 ? value / d : pow(value / e + 0.052132, 2.4);
 
-const linearTosRGB = (v) => ~~(
-    v <= 0.00001227
-        ? v * d + 1
-        : e * pow(v, 0.416666) - 13.025
-);
+const linearTosRGB = (v) =>
+    ~~(v <= 0.00001227 ? v * d + 1 : e * pow(v, 0.416666) - 13.025);
 
 const signSqr = (x) => (x < 0 ? -1 : 1) * x * x;
 
@@ -31,7 +28,14 @@ const signSqr = (x) => (x < 0 ? -1 : 1) * x * x;
  */
 const fastCos = (x) => {
     x += PI / 2;
-    x = x > PI * 5 ? x - PI * 6 : x > PI * 3 ? x - PI * 4 : x > PI ? x - PI * 2 : x;
+    x =
+        x > PI * 5
+            ? x - PI * 6
+            : x > PI * 3
+            ? x - PI * 4
+            : x > PI
+            ? x - PI * 2
+            : x;
     const cos = 1.27323954 * x - 0.405284735 * signSqr(x);
     return 0.225 * (signSqr(cos) - cos) + cos;
 };
@@ -41,7 +45,7 @@ const fastCos = (x) => {
  * @param {string} blurHash BlurHash image string
  * @param {number} width Output image width
  * @param {number} height Output image height
- * @param {?number} punch 
+ * @param {?number} punch
  * @returns {Uint8ClampedArray}
  */
 export function decodeBlurHash(blurHash, width, height, punch) {
@@ -50,7 +54,7 @@ export function decodeBlurHash(blurHash, width, height, punch) {
     const numY = ~~(sizeFlag / 9) + 1;
     const size = numX * numY;
 
-    const maximumValue = (decode83(blurHash, 1, 2) + 1) / 13446 * (punch | 1);
+    const maximumValue = ((decode83(blurHash, 1, 2) + 1) / 13446) * (punch | 1);
 
     const colors = new Float64Array(size * 3);
 
@@ -63,9 +67,9 @@ export function decodeBlurHash(blurHash, width, height, punch) {
 
     for (i = 1; i < size; i++) {
         value = decode83(blurHash, 4 + i * 2, 6 + i * 2);
-        colors[i * 3] = signSqr((~~(value / (19 * 19)) - 9)) * maximumValue;
-        colors[i * 3 + 1] = signSqr((~~(value / 19) % 19 - 9)) * maximumValue;
-        colors[i * 3 + 2] = signSqr((value % 19 - 9)) * maximumValue;
+        colors[i * 3] = signSqr(~~(value / (19 * 19)) - 9) * maximumValue;
+        colors[i * 3 + 1] = signSqr((~~(value / 19) % 19) - 9) * maximumValue;
+        colors[i * 3 + 2] = signSqr((value % 19) - 9) * maximumValue;
     }
 
     const bytesPerRow = width * 4;
@@ -96,4 +100,4 @@ export function decodeBlurHash(blurHash, width, height, punch) {
         }
     }
     return pixels;
-};
+}

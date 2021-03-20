@@ -5,4 +5,9 @@
  * @param height Output image height
  * @param punch Contrast adjustment
  */
-export declare function decodeBlurHash(blurHash: string, width: number, height: number, punch?: number): Uint8ClampedArray;
+export declare function decodeBlurHash(
+    blurHash: string,
+    width: number,
+    height: number,
+    punch?: number,
+): Uint8ClampedArray;

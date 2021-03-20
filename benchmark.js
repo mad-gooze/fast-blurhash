@@ -2,12 +2,14 @@ import b from 'benny';
 import blurhash from 'blurhash';
 import { decodeBlurHash } from './index.js';
 
-
-const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~';
+const characters =
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~';
 function randomBlurHash() {
     let result = '|EHV6n';
     for (var i = 0; i < 160; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
+        result += characters.charAt(
+            Math.floor(Math.random() * characters.length),
+        );
     }
     return result;
 }
