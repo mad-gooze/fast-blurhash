@@ -25,16 +25,16 @@ npm install --save fast-blurhash
 decodeBlurHash(blurhash: string, width: number, height: number, punch?: number) => Uint8ClampedArray`
 ```
 
-`fast-blurhash` uses approximate calculation for speed reasons. Results may slightly differ from original `blurhash.decode` but the diff is not noticeable (see [tests](./index.test.js)).
+`decodeBlurHash` uses approximate calculation for speed reasons. Results may slightly differ from original `blurhash.decode` but the diff is not noticeable (see [tests](./index.test.js)).
 
 ⚠️ `decodeBlurHash` does not validate input.
 
 #### Example
 
 ```js
-import { decode } from 'blurhash';
+import { decodeBlurHash } from 'fast-blurhash';
 
-const pixels = decode('LEHV6nWB2yk8pyo0adR*.7kCMdnj', 32, 32);
+const pixels = decodeBlurHash('LEHV6nWB2yk8pyo0adR*.7kCMdnj', 32, 32);
 
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
