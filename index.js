@@ -11,7 +11,7 @@ const decode83 = (str, start, end) => {
 
 const pow = Math.pow;
 const PI = Math.PI;
-const PI2 = PI * 2;
+const TAU = PI * 2;
 
 const d = 3294.6;
 const e = 269.025;
@@ -30,7 +30,7 @@ const signSqr = (x) => (x < 0 ? -1 : 1) * x * x;
 const fastCos = (x) => {
     x += PI / 2;
     while (x > PI) {
-        x -= PI2;
+        x -= TAU;
     }
     const cos = 1.27323954 * x - 0.405284735 * signSqr(x);
     return 0.225 * (signSqr(cos) - cos) + cos;
