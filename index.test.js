@@ -62,14 +62,14 @@ describe('fast-blurhash', () => {
     describe('getBlurHashAverageColor', () => {
         it(`returns correct average color`, () => {
             expect(getBlurHashAverageColor(hashes[0])).toMatchInlineSnapshot(`
-                Array [
+                [
                   151,
                   150,
                   149,
                 ]
             `);
             expect(getBlurHashAverageColor(hashes[1])).toMatchInlineSnapshot(`
-                Array [
+                [
                   209,
                   178,
                   163,
