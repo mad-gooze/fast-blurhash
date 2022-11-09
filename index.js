@@ -37,6 +37,16 @@ const fastCos = (x) => {
 };
 
 /**
+ * Extracts average color from BlurHash image
+ * @param {string} blurHash BlurHash image string
+ * @returns {[number, number, number]}
+ */
+export function getBlurHashAverageColor(blurHash) {
+    const val = decode83(blurHash, 2, 6);
+    return [val >> 16, (val >> 8) & 255, val & 255];
+}
+
+/**
  * Decodes BlurHash image
  * @param {string} blurHash BlurHash image string
  * @param {number} width Output image width
@@ -50,15 +60,6 @@ export function decodeBlurHash(blurHash, width, height, punch) {
     const numY = ~~(sizeFlag / 9) + 1;
     const size = numX * numY;
 
-    const maximumValue = ((decode83(blurHash, 1, 2) + 1) / 13446) * (punch | 1);
-
-    const colors = new Float64Array(size * 3);
-
-    let value = decode83(blurHash, 2, 6);
-    colors[0] = sRGBToLinear(value >> 16);
-    colors[1] = sRGBToLinear((value >> 8) & 255);
-    colors[2] = sRGBToLinear(value & 255);
-
     let i = 0,
         j = 0,
         x = 0,
@@ -71,7 +72,17 @@ export function decodeBlurHash(blurHash, width, height, punch) {
         colorIndex = 0,
         pixelIndex = 0,
         yh = 0,
-        xw = 0;
+        xw = 0,
+        value = 0;
+
+    const maximumValue = ((decode83(blurHash, 1, 2) + 1) / 13446) * (punch | 1);
+
+    const colors = new Float64Array(size * 3);
+
+    const averageColor = getBlurHashAverageColor(blurHash);
+    for (i = 0; i < 3; i++) {
+        colors[i] = sRGBToLinear(averageColor[i]);
+    }
 
     for (i = 1; i < size; i++) {
         value = decode83(blurHash, 4 + i * 2, 6 + i * 2);

@@ -1,5 +1,6 @@
 import { expect } from '@jest/globals';
 import { decode } from 'blurhash';
+import { getBlurHashAverageColor } from '.';
 import { decodeBlurHash } from '.';
 
 const hashes = [
@@ -36,23 +37,44 @@ function mse(received, expected) {
 }
 
 describe('fast-blurhash', () => {
-    sizes.forEach(({ width, height }) => {
-        hashes.forEach((hash, i) => {
-            it(`decodes image ${width}x${height} correctly, hash #${i}`, () => {
-                const expected = decode(hash, 5, 4);
-                const received = decodeBlurHash(hash, 5, 4);
+    describe('decodeBlurHash', () => {
+        sizes.forEach(({ width, height }) => {
+            hashes.forEach((hash, i) => {
+                it(`decodes image ${width}x${height} correctly, hash #${i}`, () => {
+                    const expected = decode(hash, 5, 4);
+                    const received = decodeBlurHash(hash, 5, 4);
 
-                expect(received.length).toEqual(expected.length);
-                // fast-blurhash uses approximate math calculations for perf reasons
-                // let's check that diff between fast-blurhash is small enough
-                expect(mse(received, expected)).toBeLessThan(0.5);
-            });
+                    expect(received.length).toEqual(expected.length);
+                    // fast-blurhash uses approximate math calculations for perf reasons
+                    // let's check that diff between fast-blurhash is small enough
+                    expect(mse(received, expected)).toBeLessThan(0.5);
+                });
 
-            it(`decodes image ${width}x${height} correctly, hash #${i} with punch`, () => {
-                const expected = decode(hash, 5, 4, 10);
-                const received = decodeBlurHash(hash, 5, 4, 10);
-                expect(mse(received, expected)).toBeLessThan(0.5);
+                it(`decodes image ${width}x${height} correctly, hash #${i} with punch`, () => {
+                    const expected = decode(hash, 5, 4, 10);
+                    const received = decodeBlurHash(hash, 5, 4, 10);
+                    expect(mse(received, expected)).toBeLessThan(0.5);
+                });
             });
+        });
+    });
+
+    describe('getBlurHashAverageColor', () => {
+        it(`returns correct average color`, () => {
+            expect(getBlurHashAverageColor(hashes[0])).toMatchInlineSnapshot(`
+                Array [
+                  151,
+                  150,
+                  149,
+                ]
+            `);
+            expect(getBlurHashAverageColor(hashes[1])).toMatchInlineSnapshot(`
+                Array [
+                  209,
+                  178,
+                  163,
+                ]
+            `);
         });
     });
 });

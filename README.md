@@ -18,6 +18,8 @@ npm install --save fast-blurhash
 
 ## API
 
+### decodeBlurHash
+
 `fast-blurhash` provides a drop-in replacement for [original `blurhash.decode`](https://github.com/woltapp/blurhash/tree/master/TypeScript#decodeblurhash-string-width-number-height-number-punch-number--uint8clampedarray)
 
 ```typescript
@@ -33,12 +35,32 @@ decodeBlurHash(blurhash: string, width: number, height: number, punch?: number) 
 ```js
 import { decodeBlurHash } from 'fast-blurhash';
 
+// decode blurHash image
 const pixels = decodeBlurHash('LEHV6nWB2yk8pyo0adR*.7kCMdnj', 32, 32);
 
+// draw it on canvas
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 const imageData = ctx.createImageData(width, height);
 imageData.data.set(pixels);
 ctx.putImageData(imageData, 0, 0);
 document.body.append(canvas);
+```
+
+### getBlurHashAverageColor
+
+```typescript
+getBlurHashAverageColor(blurhash: string) => [number, number, number]`
+```
+
+`getBlurHashAverageColor` returns an average color of a passed blurhash image in [red, green, blue].
+
+#### Example
+
+```js
+import { getBlurHashAverageColor } from 'fast-blurhash';
+
+// get image average color and use it as css background color
+const rgbAverageColor = getBlurHashAverageColor('LEHV6nWB2yk8pyo0adR*.7kCMdnj');
+document.body.style.backgroundColor = `rgb(${rgbAverageColor.join(',')})';
 ```
