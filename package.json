@@ -1,6 +1,6 @@
 {
     "name": "fast-blurhash",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "Fast and tiny js decoder for the Wolt BlurHash algorithm",
     "main": "index.js",
     "types": "index.d.ts",
