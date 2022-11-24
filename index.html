@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>fast-blurhash demo</title>
+
+        <style>
+            html {
+                font-size: 12px;
+            }
+
+            * {
+                box-sizing: border-box;
+                text-rendering: geometricPrecision;
+            }
+
+            h1,
+            h2 {
+                line-height: 1.3em;
+            }
+
+            body {
+                display: flex;
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 0 20px;
+                font-size: 1rem;
+                line-height: 1.5rem;
+                margin: 0;
+                font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
+                    DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New,
+                    monospace, serif;
+                word-wrap: break-word;
+            }
+
+            #canvas {
+                display: block;
+                width: 632px;
+                height: 356px;
+                background: #ccc;
+            }
+
+            #blurhash {
+                font-size: 24px;
+                width: 632px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>fast-blurhash demo</h1>
+        <section>
+            <code>fast-blurhash</code> is a tiny & fast
+            <a href="https://github.com/woltapp/blurhash">Wolt BlurHash</a>
+            decoder implementation.
+            <br />
+            <a href="https://github.com/mad-gooze/fast-blurhash">GitHub</a>
+        </section>
+        <h2>input blurhash:</h2>
+        <input
+            id="blurhash"
+            type="text"
+            value="|KO2?U%2Tw=wR6cErDEhOD]~RBVZRip0W9ofwxM_};RPxuwH%3s89]t8$%tLOtxZ%gixtQt8IUS#I.ENa0NZIVt6xFM{M{%1j^M_bcRPX9nht7n+j[rrW;ni%Mt7V@W;t7t8%1bbxat7WBIUR*RjRjRjxuRjs.MxbbV@WY"
+        />
+        <div>
+            <h2>decode image:</h2>
+            <canvas id="canvas" width="32" height="32"></canvas>
+        </div>
+        <script src="dist/main.js"></script>
+    </body>
+</html>
