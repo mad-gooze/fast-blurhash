@@ -1,5 +1,5 @@
 import b from 'benny';
-import blurhash from 'blurhash';
+import * as blurhash from 'blurhash';
 import { decodeBlurHash } from './index.js';
 
 const characters =
