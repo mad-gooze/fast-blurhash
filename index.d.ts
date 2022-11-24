@@ -11,3 +11,12 @@ export declare function decodeBlurHash(
     height: number,
     punch?: number,
 ): Uint8ClampedArray;
+
+/**
+ * Extracts average color from BlurHash image
+ * @param blurHash BlurHash image string
+ * @returns Image average color in [r, g, b];
+ */
+export declare function getBlurHashAverageColor(
+    blurHash: string,
+): [number, number, number];
