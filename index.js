@@ -1,10 +1,16 @@
-const digit =
-    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~';
+const digitLookup = new Uint8Array(128);
+for (let i = 0; i < 83; i++) {
+    digitLookup[
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~'.charCodeAt(
+            i,
+        )
+    ] = i;
+}
 const decode83 = (str, start, end) => {
     let value = 0;
     while (start < end) {
         value *= 83;
-        value += digit.indexOf(str[start++]);
+        value += digitLookup[str.charCodeAt(start++)];
     }
     return value;
 };
@@ -71,8 +77,6 @@ export function decodeBlurHash(blurHash, width, height, punch) {
         basisY = 0,
         colorIndex = 0,
         pixelIndex = 0,
-        yh = 0,
-        xw = 0,
         value = 0;
 
     const maximumValue = ((decode83(blurHash, 1, 2) + 1) / 13446) * (punch | 1);
@@ -86,26 +90,34 @@ export function decodeBlurHash(blurHash, width, height, punch) {
 
     for (i = 1; i < size; i++) {
         value = decode83(blurHash, 4 + i * 2, 6 + i * 2);
-        colors[i * 3] = signSqr(~~(value / (19 * 19)) - 9) * maximumValue;
+        colors[i * 3] = signSqr(~~(value / 361) - 9) * maximumValue;
         colors[i * 3 + 1] = signSqr((~~(value / 19) % 19) - 9) * maximumValue;
         colors[i * 3 + 2] = signSqr((value % 19) - 9) * maximumValue;
+    }
+
+    const cosinesY = new Float64Array(numY * height);
+    const cosinesX = new Float64Array(numX * width);
+    for (j = 0; j < numY; j++) {
+        for (y = 0; y < height; y++) {
+            cosinesY[j * height + y] = fastCos((PI * y * j) / height);
+        }
+    }
+    for (i = 0; i < numX; i++) {
+        for (x = 0; x < width; x++) {
+            cosinesX[i * width + x] = fastCos((PI * x * i) / width);
+        }
     }
 
     const bytesPerRow = width * 4;
     const pixels = new Uint8ClampedArray(bytesPerRow * height);
 
     for (y = 0; y < height; y++) {
-        yh = (PI * y) / height;
         for (x = 0; x < width; x++) {
-            r = 0;
-            g = 0;
-            b = 0;
-            xw = (PI * x) / width;
-
+            r = g = b = 0;
             for (j = 0; j < numY; j++) {
-                basisY = fastCos(yh * j);
+                basisY = cosinesY[j * height + y];
                 for (i = 0; i < numX; i++) {
-                    basis = fastCos(xw * i) * basisY;
+                    basis = cosinesX[i * width + x] * basisY;
                     colorIndex = (i + j * numX) * 3;
                     r += colors[colorIndex] * basis;
                     g += colors[colorIndex + 1] * basis;
