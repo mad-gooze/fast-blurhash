@@ -1,23 +1,15 @@
-const digitLookup = new Uint8Array(128);
-for (let i = 0; i < 83; i++) {
-    digitLookup[
-        '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~'.charCodeAt(
-            i,
-        )
-    ] = i;
-}
+const chars =
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~';
 const decode83 = (str, start, end) => {
     let value = 0;
     while (start < end) {
-        value *= 83;
-        value += digitLookup[str.charCodeAt(start++)];
+        value = value * 83 + chars.indexOf(str[start++]);
     }
     return value;
 };
 
 const pow = Math.pow;
 const PI = Math.PI;
-const PI2 = PI * 2;
 
 const d = 3294.6;
 const e = 269.025;
@@ -27,6 +19,18 @@ const sRGBToLinear = (value) =>
 const linearTosRGB = (v) =>
     ~~(v > 0.00001227 ? e * pow(v, 0.416666) - 13.025 : v * d + 1);
 
+// linear -> sRGB is by far the hottest part of decoding (3 conversions per
+// output pixel). The curve only depends on the linear value, so it is sampled
+// once over [0, 1] at module load into a lookup table and reused for every
+// pixel. Values outside [0, 1] clamp to the 0/255 ends like the exact formula.
+const LUT_SIZE = 4096;
+const sRGBLookup = new Uint8ClampedArray(LUT_SIZE + 1);
+for (let i = 0; i <= LUT_SIZE; i++) {
+    sRGBLookup[i] = linearTosRGB(i / LUT_SIZE);
+}
+const fastLinearTosRGB = (v) =>
+    v <= 0 ? 0 : v >= 1 ? 255 : sRGBLookup[(v * LUT_SIZE + 0.5) | 0];
+
 const signSqr = (x) => (x < 0 ? -1 : 1) * x * x;
 
 /**
@@ -34,9 +38,8 @@ const signSqr = (x) => (x < 0 ? -1 : 1) * x * x;
  * Based on FTrig https://github.com/netcell/FTrig
  */
 const fastCos = (x) => {
-    x += PI / 2;
-    while (x > PI) {
-        x -= PI2;
+    for (x += PI / 2; x > PI; ) {
+        x -= PI * 2;
     }
     const cos = 1.27323954 * x - 0.405284735 * signSqr(x);
     return 0.225 * (signSqr(cos) - cos) + cos;
@@ -66,18 +69,7 @@ export function decodeBlurHash(blurHash, width, height, punch) {
     const numY = ~~(sizeFlag / 9) + 1;
     const size = numX * numY;
 
-    let i = 0,
-        j = 0,
-        x = 0,
-        y = 0,
-        r = 0,
-        g = 0,
-        b = 0,
-        basis = 0,
-        basisY = 0,
-        colorIndex = 0,
-        pixelIndex = 0,
-        value = 0;
+    let i, j, x, y, r, g, b, basis, basisY, colorIndex, pixelIndex, value;
 
     const maximumValue = ((decode83(blurHash, 1, 2) + 1) / 13446) * (punch | 1);
 
@@ -111,24 +103,39 @@ export function decodeBlurHash(blurHash, width, height, punch) {
     const bytesPerRow = width * 4;
     const pixels = new Uint8ClampedArray(bytesPerRow * height);
 
+    // The inverse transform is separable, so it is computed in two passes per
+    // row: first collapse the Y basis into per-X-basis color sums (`u`), then
+    // collapse the X basis for each pixel. This turns the inner work from
+    // O(numX * numY) per pixel into O(numX) per pixel.
+    const u = new Float64Array(numX * 3);
     for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
+        for (i = 0; i < numX; i++) {
             r = g = b = 0;
             for (j = 0; j < numY; j++) {
                 basisY = cosinesY[j * height + y];
-                for (i = 0; i < numX; i++) {
-                    basis = cosinesX[i * width + x] * basisY;
-                    colorIndex = (i + j * numX) * 3;
-                    r += colors[colorIndex] * basis;
-                    g += colors[colorIndex + 1] * basis;
-                    b += colors[colorIndex + 2] * basis;
-                }
+                colorIndex = (i + j * numX) * 3;
+                r += colors[colorIndex] * basisY;
+                g += colors[colorIndex + 1] * basisY;
+                b += colors[colorIndex + 2] * basisY;
+            }
+            u[i * 3] = r;
+            u[i * 3 + 1] = g;
+            u[i * 3 + 2] = b;
+        }
+        for (x = 0; x < width; x++) {
+            r = g = b = 0;
+            for (i = 0; i < numX; i++) {
+                basis = cosinesX[i * width + x];
+                colorIndex = i * 3;
+                r += u[colorIndex] * basis;
+                g += u[colorIndex + 1] * basis;
+                b += u[colorIndex + 2] * basis;
             }
 
             pixelIndex = 4 * x + y * bytesPerRow;
-            pixels[pixelIndex] = linearTosRGB(r);
-            pixels[pixelIndex + 1] = linearTosRGB(g);
-            pixels[pixelIndex + 2] = linearTosRGB(b);
+            pixels[pixelIndex] = fastLinearTosRGB(r);
+            pixels[pixelIndex + 1] = fastLinearTosRGB(g);
+            pixels[pixelIndex + 2] = fastLinearTosRGB(b);
             pixels[pixelIndex + 3] = 255; // alpha
         }
     }
