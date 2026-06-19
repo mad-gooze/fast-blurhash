@@ -6,9 +6,20 @@
 > Fast & tiny [Wolt BlurHash](https://github.com/woltapp/blurhash) decoder implementation
 
 -   🤏 **Tiny**: ≈1kb minified
--   🚀 **Fast**: up to 70% faster then [original `blurhash.decode`](https://github.com/woltapp/blurhash/tree/master/TypeScript#decodeblurhash-string-width-number-height-number-punch-number--uint8clampedarray) (see [benchmark](./benchmark.js))
+-   🚀 **Fast**: up to ~90x faster than [original `blurhash.decode`](https://github.com/woltapp/blurhash/tree/master/TypeScript#decodeblurhash-string-width-number-height-number-punch-number--uint8clampedarray) (see [benchmark](./benchmark.js))
 
 [Demo](https://mad-gooze.github.io/fast-blurhash/)
+
+## Benchmark
+
+Decoding ops/s, higher is better ([`benchmark.js`](./benchmark.js)):
+
+| Decode size | `blurhash.decode` | `fast-blurhash` | Speedup |
+| ----------- | ----------------: | --------------: | ------: |
+| 32×32       |       402 ops/s   |   17 105 ops/s  |   ~43x  |
+| 64×64       |        97 ops/s   |    5 307 ops/s  |   ~55x  |
+| 100×50      |        81 ops/s   |    4 494 ops/s  |   ~55x  |
+| 640×480     |         1 ops/s   |       89 ops/s  |   ~89x  |
 
 ## Install
 
